@@ -1,0 +1,164 @@
+\documentclass{llncs}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{subfig}
+\usepackage{graphicx}
+\usepackage{url}
+\newcommand{\X}{{\bf X}}
+\newcommand{\x}{{\bf x}}
+\newcommand{\p}{{\bf p}}
+\newcommand{\rr}{{\bf r}}
+\newcommand{\I}{\image{I}}
+\newcommand{\V}{{\bf V}}
+\newcommand{\vv}{{\bf v}}
+\newcommand{\h}{{\bf H}}
+% {\Large \bf  Eigenanatomy: A sparse anatomical decomposition method for a ``cluster then threshold'' approach to morphometry} \\
+\title{Eigenanatomy improves detection power for longitudinal cortical change}
+% \author{Anon}
+% \institute{Penn Image Computing and Science Laboratory}
+\begin{document}
+\maketitle
+\begin{abstract}
+Abstract. We contribute a novel and interpretable strategy, BLAH, that is tuned for X. The method does GreatThing1 and achieves this by GreatThing2. We employ the BLAH to improve X. Standard approaches analyzes imaging data by .... BLAH improves the standard procedure by first ... and then .... As with some traditional methods, this new strategy can greatly improve X. Our results show that BLAH provides a principled objective function that leads to SomeAdvantage. BLAH therefore improves our ability to Something biologically plausible in SomeApplicationArea. We detail the algorithm and show experimental evidence of its efficacy. 
+\end{abstract}
+
+\section*{Introduction}
+In domain X, Y and Z are known about our problem.  Previous methods have included A, B, and C \cite{blahblahblah}.  However, these methods are unsuited for our domain because of D E F.  
+
+In this work, we propose the novel method ``Spectacularly Novel Method'' which deals with issues D E and F, and also has benefits G H I.  In short, our contributions are: 
+\begin{enumerate}
+\item It has nice theory. 
+\item It has great results. 
+\item It is computationally simple. 
+\end{enumerate}
+
+
+\section*{Methods}
+The class of methods encompassing non-negative matrix factorization
+(NMF) \cite{Lee1999,sparseNMF_hoyer,sparseNMF_kim,sparseNMF_heiler},
+sparse principal components analysis (SPCA)
+\cite{sparsePCA_zou,sparsePCA_jordan,sparsePCA_journee,sparsePCA_witten,Gandy2010,Lee2011}
+and singular value decomposition \cite{Sill2011,Lee2010b,Yeung2002}
+form the basis for the approach proposed here. More formally, define a
+$n \times p$ (rows by columns) matrix $\X$ where each row derives from
+an observed subject image such that the collection of images is given
+as vectors $\{x_1,...,x_n\}$ with each vector $x_i$ containing $p$ entries.  
+First, we denote each eigenanatomy component (a pseudo-eigenvector) as
+${\vv}_i$ where $i$ is ordered such that each eigenanatomy from
+${\vv}_1$ to ${\vv}_m$ provides a decreasing contribution to the
+variance of matrix $\X$.  We define eigenanatomy pseudo-eigenvectors as {\em
+  sparse}.  Sparseness means that some entries in ${\vv}_j$ will be zero.
+ 
+The classic singular value decomposition (SVD) may be used to reduce the dimensionality of this data by decomposing the dataset into the eigenvectors of $C_p = \X^T\X$ and $C_n = \X\X^T$ (the right and left singular vectors, respectively).  
+The relationship between a $C_p$ and a $C_n$ eigenvector is given by $\X \vv^p = \vv^n$ and $\X^T \vv^n = \vv^p$.  
+The $n$ eigenvectors from $C_p$ and $C_n$ may be used to reconstruct the matrix $\X$ by 
+% \begin{eqnarray}
+$\sum_i \vv^n_i \otimes \vv^p_i \lambda_i $
+% \end{eqnarray}
+where the $\lambda_i$ denotes the $i^{th}$ eigenvalue and $\otimes$ the outer product.
+
+Our goal is to approximate the matrix $\X$ with its right and left singular vectors but where the right singular vector is {\em sparse}.  We might, then, minimize:
+\begin{eqnarray}
+\label{eq:recon}
+\| \X  -  \sum_i \vv^n_i \otimes \vv^{sp}_i \lambda_i  \|^2
+\end{eqnarray}
+where the $\vv^{sp}_i$ denotes the $i^{th}$ {\em sparse} right singular vector.  However, it is known that the minimizer, here, is exactly $\X^T \vv^n$ ( if we relax sparseness constraints ).  Using the fact that $\X \vv^p = \vv^n$ and $\X^T \vv^n = \vv^p$,  we therefore reformulate the objective in a slightly simpler form and seek:
+\begin{eqnarray}
+\label{eq:basic}
+\underset{\vv^{sp}_i}{\operatorname{arg\,min}}~~\|  \X \vv^{sp}_i - \vv_i^n \|^2 . 
+\end{eqnarray}
+This optimization problem is quadratic without sparseness constraints and easily solved by conjugate gradient through the normal equations $\| \X^T\X \vv^{sp}_i - \X^T\vv_i^n \|^2$.
+
+Now, note that the vector $\X^T\vv_i^n=\vv_i^p$ might have both positive and negative values.  As with non-negative matrix factorization, we seek a decomposition that is unsigned.   However, an optimal solution that minimizes $\|  \X \vv^{sp}_i - \vv_i^n \|^2$ will need to model both signs.  We therefore make a second adjustment to our objective by modeling the positive and negative components of $\vv_i^p$ separately.
+
+Each eigenvector may be written in an expanded form via the use of indicator functions which are diagonal matrices with binary entries.  For instance, if $\vv$ contains entries $[~-2,~-1,~0,~1,~2~]$, then the positive indicator function is $I^+=[~0,~0,~0,~1,~1~]$ and the negative indicator function is $I^-=[~1,~1,~0,~0,~0~]$.  $\vv$ may then be expressed as $\vv = I^+\vv + I^- \vv = \vv^+ + \vv^-$.  We use these indicator functions to separate the positive and negative components of our objective such that the optimization in equation~\ref{eq:basic} becomes,
+\begin{equation}
+\label{eq:basic2}
+\underset{\vv^{sp+}_i~,~\vv^{sp-}_i}{\operatorname{arg\,min}}~~\|  \X^T\X \vv^{sp+}_i - \vv_i^{p+} \|^2 + \|  \X^T\X \vv^{sp-}_i - \vv_i^{p-} \|^2  
+\end{equation}
+This minimization problem forms the basis for our novel approach to computing eigenanatomy, i.e. anatomically localized approximations to the eigenvectors of an anatomical imaging dataset.   Derivation of sparse eigenanatomy is shown in Figure~\ref{fig:eigenanatomy}.
+\begin{algorithm} 
+\begin{algorithmic} 
+\State Input $\X$, the eigenvectors of $\X \X^T$ and $\gamma$, the sparseness parameter.
+\ForAll{$\vv_i \in \lbrace \vv_1, \ldots, \vv_{n-1} \rbrace$}
+                \State $\vv_i \leftarrow \X^T \vv^n_i$ \Comment{Get the $p$-space eigenvector from the $\vv^n_i$.}
+                \State Compute $\vv^+_i$ and $\vv^-_i$.  \Comment{Find the $+$ and $-$ representation of $\vv_i$.}
+                \State $\vv^{s+}_i \leftarrow\vv^{s-}_i \leftarrow \frac{1}{p}$ \Comment{Initialize the sparse $+$ and $-$ vectors.}
+		\State $\vv^{s+}_i \leftarrow \text{SNLCG}(\X,\vv^{s+}_i,\vv^{+}_i,\gamma)$ \Comment{SNLCG $+$ minimization.}
+		\State $\vv^{s-}_i \leftarrow \text{SNLCG}(\X,\vv^{s-}_i,\vv^{-}_i,\gamma)$ \Comment{SNLCG $-$ minimization.}
+		\State $\vv^{s-}_i \leftarrow \vv^{s-}_i * (-1) $ \Comment{Reset $\vv^{s-}_i$ to be positive.}
+	\EndFor
+\end{algorithmic}
+\caption{SNLCG optimization for eigenanatomy.}
+\label{alg:eigenanatomy}
+\end{algorithm}
+As noted above, we seek sparse and interpretable solutions.  We define a sparse vector as one which minimizes a $l_0$ or $l_1$ penalty term i.e. has either a user-specified number of non-zero entries ($l_0$) or absolute sum ($l_1$).  Although the $l_1$ penalty has advantages \cite{sparsePCA_zou},  we use the $l_0$ penalty because it specifies the fraction of the vector that is allowed to be non-zero.  The sparseness restriction is therefore easily interpreted by users of the eigenanatomy method.  The eigenanatomy objective seeks to identify sparse functions $\vv_i^{sp+}$ and $\vv_i^{sp-}$ that closely approximate the eigenvectors in $n$-space, i.e. $\vv^i_n=\X \vv_i^p$.  The objective function is then:
+\begin{eqnarray}
+\label{eq:eigenanatomy}
+\underset{\vv_i}{\operatorname{arg\,min}}~~\sum^n_{i=1}~~\|~C_p \vv_i^{sp+} - \vv_i^{p+} ~\|^2 + \|~C_p \vv_i^{sp-} - \vv_i^{p-} ~\|^2 \\ 
+\text{subject to:}~~~  \| \vv_i^{sp+} \|_0 =  \| \vv_i^{sp-} \|_0 = \gamma,\notag
+\end{eqnarray}
+
+where $\gamma$ defines the desired level of sparseness for each eigenanatomy vector.  
+Eigenanatomy therefore produces $2*n$ sparse pseudo-eigenvectors whose product with $\X$ may be used a predictors in standard linear regression.  Importantly, because these vectors are unsigned, they may be interpreted as {\em weighted averages of the input data.}  
+
+Sparseness can be enforced by a soft-thresholding algorithm as in \cite{sparsePCA_zou,sparsePCA_witten}.  We denote this function as $S( \vv , \gamma)$ and (in an {\em adhoc} manner) allow it to also reject isolated voxels of the eigenanatomy vector that are non-contiguous (i.e. we provide a cluster threshold as in VBM).  Minimization problems involving the $l_0$ penalty are $np$-hard.  However, the relaxed form of this objective function (i.e. without the sparseness constraint) is purely quadratic and can easily be solved by a conjugate gradient method.  Thus, we propose a new sparse, nonlinear conjugate gradient (SNLCG) method as a minimization procedure for the eigenanatomy objective function to deal with the nonlinearities induced by the $S$ function and $l_0$ constraint.  Such methods are efficient and reliable for sparse estimation methods \cite{marjanovic2010}.  The additional advantage of SNLCG is that its solutions approach the quadratic minimum as sparseness constraints are relaxed.  We detail the minimization algorithms for the eigenanatomy objective function (equation~\ref{eq:eigenanatomy}) in algorithms~\ref{alg:eigenanatomy} and~\ref{alg:snlcg}.  The algorithms are also available in an open-source {\bf R} package for free use. 
+\begin{algorithm}[t]
+\begin{algorithmic}
+\State Input $\X, \vv^{-}_i, \vv^{s-}_i, \gamma$.
+\State ${\bf b }\leftarrow  \vv^{-}_i$ 
+\State $\x_k \leftarrow  \vv^{s-}_i$ 
+\State $\rr_k \leftarrow (~{\bf b }~-~\X^T (~\X~\x_k~)~)$ \Comment{Use the gradient of the quadratic term.}
+\State $\p_k \leftarrow \rr_k$
+\State $\Delta E \leftarrow \infty$
+\While{$\Delta E > 0$}
+               \State $\alpha_k \leftarrow \langle~ \p_k , ~\X^T~\X~\x_k~\rangle $  \Comment{$\langle \cdot , \cdot \rangle$ denotes inner product.}
+%              \State $\alpha_{\text{min}} \leftarrow 0 $
+%               \State $\alpha_{\text{max}} \leftarrow \alpha_k * 2 $  \Comment{Assume minimum is in $[ 0, 2 \alpha_k]$.}
+%               \State $\alpha_k \leftarrow \text{LineSearch}(\X, \x_k, \p_k, \alpha_{\text{min}} ,\alpha_{\text{max}},\gamma)$ 
+%               \State \Comment{Golden section line search on the objective function gives best $\alpha_k$.}
+               \State $ \x_{k+1} \leftarrow \x_k + \alpha_k \p_k$ 
+               \State $ \x_{k+1} \leftarrow S( \x_{k+1} , \gamma)$
+               \State \Comment{Project $\x_{k+1}$ to the sparse solution space given by the objective function.}
+               \State $\rr_{k+1} \leftarrow S(~{\bf b }~-~\X^T (~\X~\x_{k+1}~)~, \gamma)$   \Comment{Use the gradient of the quadratic term.}
+               \State \Comment{Project $\rr_{k+1}$ to the sparse solution space given by the objective function.}
+               \State $\beta_k  \leftarrow  \| \rr_{k+1} \|^2 / \| \rr_{k} \|^2$  \Comment{Standard conjugate gradient definitions below.}
+               \State $p_{k+1}  = r_{k+1} + \beta_k * p_k$
+                \State $\Delta E  \leftarrow  \| \rr_k \| - \| \rr_{k+1} \|$
+                \State $\rr_k  \leftarrow  \rr_{k+1}; \x_k  \leftarrow  \x_{k+1}; \p_k  \leftarrow  \p_{k+1}$.
+	\EndWhile
+\end{algorithmic}
+\caption{SNLCG sub-algorithm for eigenanatomy.}
+\label{alg:snlcg}
+\end{algorithm}
+\newline
+%\vspace{-0.05in}
+
+\noindent {\bf \Large Results} \newline \newline
+For all uses of eigenanatomy below, we set the sparseness parameter, $\gamma$, to select 5\% of the voxels in the cortex.  We choose 5\% because this provides interpretable clusters of regions in the cortex and yet still allows a reasonable reconstruction of the original data matrix, as shown in Figure~\ref{fig:eigenanatomy}. \newline
+
+\noindent{\bf Reconstruction error:} We quantify the ability of the eigenanatomy algorithm to reconstruct the original dataset from sparse eigenvectors using equation~\ref{eq:recon}.  As a baseline, we compare the full eigenanatomy solution to the reconstruction given by applying the soft-threshold function $S$ directly to the SVD-derived vectors $\vv_i^p$ without further optimization.  We call this ``soft-SVD''.  We also compare reconstruction error to the eigenanatomy algorithm run with a restriction on the number of iterations in the SNLCG sub-algorithm.  These experiments show that the full eigenanatomy algorithm run until convergence (error = 1.251 ) improves upon both the soft-SVD solution (error = 1.292) and the limited iteration eigenanatomy solution (error = 1.279). Error is measured by the frobenius norm taken between the original matrix and the reconstructed matrix.\newline
+
+\noindent{\bf Neuroimaging data:} Our cohort consists of 61 participants, including 15 patients with AD (7 females), 23 patients with FTLD (14 females), and 23 controls (13 females). All patients were clinically diagnosed by a board-certified neurologist and cerebrospinal fluid confirmation of the underlying pathology was obtained \cite{Irwin2011}.  No significant difference exist between disease
+duration, age or education in the patient or control groups.  Two 3.0T MPRAGE T1-weighted magnetic resonance images were obtained for each subject.  The FTLD group (time interval 1.12 years +/- 0.28) trended (p$<$0.081) towards having a reduced interval when compared to elderly controls (time interval 1.29+/-0.36 years), as did the AD group (time interval 1.13+/-0.25 years, p$<$0.12). The interval between scans was therefore factored out as a nuisance variable.
+
+%We contrast the power of eigenanatomy vectors to act as predictors that are related to the clinical diagnosis and which differentiate subject (AD or FTLD) cortical atrophy rate from controls.  To gain the raw voxel-wise estimates of cortical atrophy, we employ intensity normalization, inhomogeneity correction, unbiased registration and a spatiotemporal Markov random field segmentation procedure that is guided by 4D tissue priors.  Details of this processing framework, which is open-source and freely available, are available elsewhere \cite{anon}. \newline
+
+
+\noindent{\bf Detection power in comparison to VBM, SVD and PMD:}  In this section, we employ eigenanatomy to compare the ability to detect group differences in cortical atrophy rate between FTLD subjects and controls as well as AD subjects and controls.  This analysis shows specificity of the approach and biological plausibility in two different neurodegenerative disorders.  
+
+We passed the same input dataset to all methods.  The data consisted of unbiased voxel-wise measures of annualized atrophy rate in the cortex of all patients normalized to a group template, as described elsewhere \cite{anon}.  The regression model employed for all methods is summarized ( in {\bf R} syntax) as: {\em atrophy-rate} $\approx 1 +$ diagnosis $+$ education $+$ interval-between-images $+$ disease-duration + gender.  ``Diagnosis'' is the predictor of interest i.e. we test whether the presence of disease predicts atrophy rate given the presence of the covariates.  The {\em atrophy-rate} is either a vector of voxel-wise measures or a basis function projection against the original atrophy rate image matrix $\X$ i.e. $\X \vv_i^p$.   The latter case is used for classic SVD, PMD, soft-SVD in addition to eigenanatomy.  We define significance as a $q$-value $< 0.05$ where a $q$-value is a false discovery rate corrected $p$-value.  For PMD and SVD, we tested $n$ different atrophy rates ( one for each eigenvector ) where $n$ is number of subjects.  For eigenanatomy and soft-SVD, we used $2n$ predictors as suggested by design in the algorithm.  For VBM, we tested all 50,194 voxels (the number of columns in $\X$).
+
+For the FTLD subjects and the AD subjects, when classic SVD projections were used as measures of atrophy rate, {\em no} significant predictors emerged.  The same is true for the PMD method---although we note the caveat that, potentially, a more exhaustive parameter search may have resulted in better PMD results.  Both univariate VBM and soft-SVD identify significant effects although the minimum $q$-value and extensiveness of both soft-SVD and VBM are far less than eigenanatomy.  This is particularly true for the FTLD subjects for which VBM only produces a small 20 voxel cluster that survives correction.  The results are summarized further in Figure~\ref{fig:stats}.  Detailed clinical interpretation is beyond the scope of the paper but the results, overall, are coincident with what is known about these disorders.  In particular, the largest atrophy rate in FTLD was in right orbitofrontal cortex.  For AD, this region was in the precuneus.  
+\newline
+
+
+\noindent {\bf \Large Conclusion} \newline \newline We detailed the eigenanatomy theory and algorithm and showed that eigenanatomy improves image reconstruction from a sparse set of anatomical basis functions.  We showed that eigenanatomy also improves detection power for detecting group differences in longitudinal cortical change relative to SVD, PMD and univariate VBM.  However, this approach is not limited to longitudinal analysis and may be applied in a variety of morphometry contexts.  Future work will involve exploration of alternatives to the SNLCG algorithm, alternative penalty terms and an automation of parameter selection.
+
+\bibliographystyle{splncs}
+\bibliography{refs}
+
+\end{document}

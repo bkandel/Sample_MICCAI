@@ -58,7 +58,7 @@ This problem is ``nice'' in that it can be solved by singular value decompositio
 Sparse CCA extends CCA with additional constraints that allow the problem to be solved even when the input matrices are ``fat'' i.e. the number of columns far exceeds the number of rows.  The SCCA formulation optimizes: 
 \begin{gather*}
 \underset{u^i,u^j}{\operatorname{arg\,max}} \quad~ ~~u^i~(X^i)^T ~X^j~u^j~\\ \notag \text{subject to} \\ \notag
-\sum_i \|u_i\|_1 \leq s,~~ \sum_i \|u_j\|_1 \leq t, ~~\| A X_i \| = \| B Y_i \| = 1,
+\sum_i \|u^i\|_1 \leq s, ~~ u^i \ge 0,~~ \sum_i \|u^j\|_1 \leq t, ~~ u^j \ge 0 , ~~\| A X_i \| = \| B Y_i \| = 1,
 \end{gather*}
 where $s, t$ determine sparseness.  Due to the non-linear (even np-hard) nature of this problem, optimizing for a single canonical variate, $u_i$, involves a nonlinear gradient descent on the objective function above.  This is one disadvantage of these methods.  However, one gains robustness and the ability to exploit the full information of the input data.  
 % \end{comment}

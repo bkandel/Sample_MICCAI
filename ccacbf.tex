@@ -16,13 +16,13 @@
 \newcommand{\vv}{{\bf v}}
 \newcommand{\h}{{\bf H}}
 % {\Large \bf  Eigenanatomy: A sparse anatomical decomposition method for a ``cluster then threshold'' approach to morphometry} \\
-\title{Eigenanatomy improves detection power for longitudinal cortical change}
+\title{Fusing functional signals by sparse canonical correlation analysis improves network reproducibility}
 % \author{Anon}
 % \institute{Penn Image Computing and Science Laboratory}
 \begin{document}
 \maketitle
 \begin{abstract}
-Abstract. We contribute a novel and interpretable strategy, BLAH, that is tuned for X. The method does GreatThing1 and achieves this by GreatThing2. We employ the BLAH to improve X. Standard approaches analyzes imaging data by .... BLAH improves the standard procedure by first ... and then .... As with some traditional methods, this new strategy can greatly improve X. Our results show that BLAH provides a principled objective function that leads to SomeAdvantage. BLAH therefore improves our ability to Something biologically plausible in SomeApplicationArea. We detail the algorithm and show experimental evidence of its efficacy. 
+We contribute a novel multivariate strategy for computing brain network structure from arterial spin labeling (ASL) MRI.  Our method, X, fuses and correlates multiple functional signals by employing an interpretable dimensionality reduction method, sparse canonical correlation analysis.  There are two key aspects of this contribution.  First, we show how sparse canonical correlation analysis (SCCA) may be used to compute a multivariate correlation between different regions of interest (ROI).  In contrast to averaging signal over the ROI, this approach exploits the full information within the ROIs.  Second, we show how SCCA may simultaneoulsy exploit both the BOLD and ASL-based cerebral blood flow (CBF) time series to produce network measurements.  Our approach to fusing multiple time signals in network studies improves reproducibility over standard approaches while retaining the interpretability afforded by the classic region of interest (ROI)/seed-based methods.  We show experimentally in test-retest data that our sparse CCA method extracts biologically plausible and stable network structures from ASL.  We compare the ROI approach to the CCA approach within CBF measurements.  We then compare these to the joint BOLD-CBF networks in a reproducibility study and in studying network structure in traumatic brain injury (TBI) patients. (In TBI, standard seed-based approaches may fail due to local injury which makes averaging senseless).  Our results show that X provides both a principled objective function for relating functional regions in a semi-supervised manner without compromising interpretability.  We detail the algorithm and show experimental evidence of its efficacy in a clinically relevant study of traumatic brain injury.  
 \end{abstract}
 
 \section*{Introduction}

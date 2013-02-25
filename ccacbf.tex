@@ -5,6 +5,7 @@
 \usepackage{algpseudocode}
 \usepackage{algorithm}
 \usepackage{subfig}
+\usepackage{xcolor}
 \usepackage{graphicx}
 \usepackage{url}
 \newcommand{\X}{{\bf X}}
@@ -43,6 +44,32 @@ The method is freely available in a public open source toolkit \cite{}.
 
 
 \section*{Methods}
+Denote the matrices that describe the ASL-BOLD or ASL-CBF time series within a brain ROI as $X$ and $Y$ respectively.  Denote a ASL-BOLD sub-matrix extracted from ROI$^i$ as $X^i$.  Then $Y^i$ will contain the same ROI's ASL-CBF measurements.
+
+The classic seed-based ROI analysis will compute $x^i = 1/n \sum_k x^i_k$ which denotes averaging the $x^i_k$ columns of $X^i$ and similarly for $y^i$.  Standard network analysis will then derive from a correlation matrix, $\mathcal{R}$, of size $L \times L$ where there are $L$ ROIs and where $\mathcal{R}(i,j)=Corr(x^i,x^j)$ with $Corr$ denoting Pearson correlation. 
+
+Canonical correlation analysis (CCA) generalizes this approach \cite{Hotelling}.  CCA introduces new unknown vectors, $u^i$ and $u^j$, that act as weighted averages of $x^i, x^j$.  CCA will optimize:
+\begin{equation}
+\underset{u^i,u^j}{\operatorname{arg\,max}} \quad~ Corr(~u^i~X^i,~u^j~X^j~) 
+\end{equation}
+\textcolor{red}{FIXME---check CCA formulation.}
+This problem is ``nice'' in that it can be solved by singular value decomposition if the number of samples is larger than the minimum number of columns in $X^i$ or $X^j$.
+
+Sparse CCA extends CCA with additional constraints that allow the problem to be solved even when the input matrices are ``fat'' i.e. the number of columns far exceeds the number of rows.  The SCCA formulation optimizes: 
+\begin{gather*}
+\underset{u^i,u^j}{\operatorname{arg\,max}} \quad~ ~~u^i~(X^i)^T ~X^j~u^j~\\ \notag \text{subject to} \\ \notag
+\sum_i \|u_i\|_1 \leq s,~~ \sum_i \|u_j\|_1 \leq s, ~~\| A X_i \| = \| B Y_i \| = 1,
+\end{gather*}
+where $s, t$ determine sparseness.  Due to the non-linear (even np-hard) nature of this problem, optimizing for a single canonical variate, $u_i$, involves a nonlinear gradient descent on the objective function above.  This is one disadvantage of these methods.  However, one gains robustness and the ability to exploit the full information of the input data.  
+% \end{comment}
+
+My novel SCCAN method will improve previous sparse CCA work by: (1) computing multiple canonical variates at once via a new method; (2) employing the eigenanatomy anatomical smoothness constraint; (3) extending sparse regression methods (as in SCAN) for regression to the sparse CCA problem thereby improving solution accuracy and convergence. %Because I use gradient-based optimization, SCCAN is appropriate for associating very high-dimensional datasets such as genomics and neuroimaging.   
+SCCAN (and SCCA \cite{witten_extensions_2009} and the related Partial Least Squares (PLS) \cite{LeFloch2012} and sparse reduced rank regression methods \cite{Vounou2010}) are vastly more efficient, statistically, than univariate methods because it produces a single association metric for the full dataset and reduces dimensionality of both the imaging and the genomics {\em at the same time}.  % SCCAN allows one to dassociate subsets of information between two multivariate datasets collected from the same cohort of individuals.  
+The method is also suggested by Thompson et al. as a promising approach \cite{Glahn2007,Thompson2010}. 
+
+
+
+
 The class of methods encompassing non-negative matrix factorization
 (NMF) \cite{Lee1999,sparseNMF_hoyer,sparseNMF_kim,sparseNMF_heiler},
 sparse principal components analysis (SPCA)

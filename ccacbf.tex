@@ -23,7 +23,7 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-We contribute a novel multivariate strategy for computing brain network structure from arterial spin labeling (ASL) MRI.  Our method, X, fuses and correlates multiple functional signals by employing an interpretable dimensionality reduction method, sparse canonical correlation analysis (SCCA).  There are two key aspects of this contribution.  First, we show how SCCA may be used to compute a multivariate correlation between different regions of interest (ROI).  In contrast to averaging signal over the ROI, this approach exploits the full information within the ROIs.  Second, we show how SCCA may simultaneoulsy exploit both the ASL-BOLD and ASL-based cerebral blood flow (CBF) time series to produce network measurements.  Our approach to fusing multiple time signals in network studies improves reproducibility over standard approaches while retaining the interpretability afforded by the classic ROI seed-based methods.  We show experimentally in test-retest data that our sparse CCA method extracts biologically plausible and stable network structures from ASL.  We compare the ROI approach to the CCA approach while using CBF measurements alone.  We then compare these results to the joint BOLD-CBF networks in a reproducibility study and in studying network structure in traumatic brain injury (TBI) patients.  In TBI, standard seed-based approaches may fail due to local injury which makes averaging over a full ROI less meaningful.  We detail the algorithm and show experimental evidence of its efficacy in a clinically relevant TBI population.  Our results show that X ....  
+We contribute a novel multivariate strategy for computing brain network structure from arterial spin labeling (ASL) MRI.  Our method, X, fuses and correlates multiple functional signals by employing an interpretable dimensionality reduction method, sparse canonical correlation analysis (SCCA).  There are two key aspects of this contribution.  First, we show how SCCA may be used to compute a multivariate correlation between different regions of interest (ROI).  In contrast to averaging signal over the ROI, this approach exploits the full information within the ROIs.  Second, we show how SCCA may simultaneoulsy exploit both the ASL-BOLD and ASL-based cerebral blood flow (CBF) time series to produce network measurements.  Our approach to fusing multiple time signals in network studies improves reproducibility over standard approaches while retaining the interpretability afforded by the classic ROI seed-based methods.  We show experimentally in test-retest data that our sparse CCA method extracts biologically plausible and stable network structures from ASL.  We compare the ROI approach to the CCA approach while using CBF measurements alone.  We then compare these results to the joint BOLD-CBF networks in a reproducibility study and in a study of network structure in traumatic brain injury (TBI).  In TBI, standard region-based approaches may fail due to local injury which makes averaging over a full ROI less meaningful.  We detail the algorithm and show experimental evidence of its efficacy in a clinically relevant TBI population.  Our results show that X ....  
 \end{abstract}
 
 \section{Introduction}
@@ -46,7 +46,7 @@ The method is freely available in a public open source toolkit \cite{anon}.
 Canonical correlation analysis was originally proposed as a method for elucidating the relationship between two set of measurements taken across a population \cite{Hotelling1936} and is thus a well-suited basis for the examination of multi-variate neuroimaging data.  
 
 \subsection{Fusing functional signals via SCCA}
-Here, we denote the matrices that describe the ASL-BOLD or ASL-CBF time series within a whole-brain ROI as $X$ and $Y$ respectively.  Additionally, for a given set of anatomical ROIs for which there are $L$ regions, we denote the ASL-BOLD sub-matrix extracted from ROI$^i$ as $X^i$, a matrix of size $t \times v$ where $t$ is the the number of time points in the signal and $v$ is the number of voxels in ROI$^i$.  Then $Y^i$ will contain that same ROI's ASL-CBF measurements. The classic region-based analysis will compute $x^i = 1/n \sum_k x^i_k$ which denotes averaging the $x^i_k$ columns of $X^i$ and similarly for $y^i$.  From these region-averaged time-signals, a correlation matrix, $\mathcal{R}$, of size $L \times L$ is calculated, where $\mathcal{R}(i,j)=Corr(x^i,x^j)$ with $Corr$ denoting the Pearson's correlation. This correlation matix then serves as the basis for graph-based analysis. However, using this method, separate matrices need to be calculated for ASL-CBF and ASL-BOLD.
+Here, we denote the matrices that describe the ASL-BOLD or ASL-CBF time series within a whole-brain ROI as $X$ and $Y$ respectively.  Additionally, for a given set of anatomical ROIs for which there are $L$ regions, we denote the ASL-BOLD sub-matrix extracted from ROI$^i$ as $X^i$.  Then $Y^i$ will contain that same ROI's ASL-CBF measurements. The classic region-based analysis will compute $x^i = 1/n \sum_k x^i_k$ which denotes averaging the $x^i_k$ columns of $X^i$ and similarly for $y^i$.  From these region-averaged time-signals, a correlation matrix, $\mathcal{R}$, of size $L \times L$ is calculated, where $\mathcal{R}(i,j)=Corr(x^i,x^j)$ with $Corr$ denoting the Pearson's correlation. This correlation matix then serves as the basis for graph-based analysis. Using this method, separate matrices must be calculated for ASL-CBF and ASL-BOLD.
 
 Canonical correlation analysis (CCA) generalizes this approach \cite{Hotelling1936}.  CCA introduces new unknown vectors, $u^i$ and $u^j$, that act as weighted averages of $x^i, x^j$.  CCA will optimize:
 \begin{equation}
@@ -58,41 +58,23 @@ This formulation allows for the inclusion of the full time signal in all voxels 
 \underset{u^i,u^j}{\operatorname{arg\,max}} \quad~ ~~u^i~(X^i)^T ~X^j~u^j~\\ \notag \text{subject to} \\ \notag
 \sum_i \|u^i\|_1 \leq s, ~~ u^i \ge 0,~~ \sum_i \|u^j\|_1 \leq t, ~~ u^j \ge 0 , ~~\| A X_i \| = \| B Y_i \| = 1,
 \end{gather*}
-where $s, t$ determine sparseness.  Due to the non-linear (even np-hard) nature of this problem, optimizing for a single canonical variate, $u_i$, involves a nonlinear gradient descent on the objective function above.  This is one disadvantage of these methods.  However, one gains robustness and the ability to exploit the full information of the input data. 
+where $s, t$ determine sparseness.  Due to the non-linear (even np-hard) nature of this problem, optimizing for a single canonical variate, $u_i$, involves a nonlinear gradient descent on the objective function above.  This is one disadvantage of these methods.  However, one gains robustness and the ability to exploit the full information of the input data. An addtional advantage is that the formulation shown above may be easily exteneded to incorporate both ASL-CBF and ASL-BOLD data for simultaneous analysis. For a given ROI, $\X^i$ is an $n \times p$ (rows by columns) matrix where $n$ is the number of acquired time points and $p$ is the number of voxels in ROI$^i$. Since both ASL-CBF and ASL-BOLD derive from the same acquisition, $X^i$ and $Y^i$ will always have the same dimensions. To examine both metrics simultaneously we can column-append the two matrices: $Z^i = \left[ \left[X^i\right] \left[Y^i\right] \right]$ resulting in a $n \times 2p$ matrix. For clarity, $\X$ will be used in further equations with the knowledge that it could be replaced with $Y$ or $Z$ with no resulting changes to the algorithm.
 
-
-
-
-%My novel SCCAN method will improve previous sparse CCA work by: (1) computing multiple canonical variates at once via a new method; (2) employing the eigenanatomy anatomical smoothness constraint; (3) extending sparse regression methods (as in SCAN) for regression to the sparse CCA problem thereby improving solution accuracy and convergence. %Because I use gradient-based optimization, SCCAN is appropriate for associating very high-dimensional datasets such as genomics and neuroimaging.   
-%SCCAN (and SCCA \cite{witten_extensions_2009} and the related Partial Least Squares (PLS) \cite{LeFloch2012} and sparse reduced rank regression methods \cite{Vounou2010}) are vastly more efficient, statistically, than univariate methods because it produces a single association metric for the full dataset and reduces dimensionality of both the imaging and the genomics {\em at the same time}.  % SCCAN allows one to dassociate subsets of information between two multivariate datasets collected from the same cohort of individuals.  
-%The method is also suggested by Thompson et al. as a promising approach \cite{Glahn2007,Thompson2010}. 
-
-
-
-
-The class of methods encompassing non-negative matrix factorization
-(NMF) \cite{Lee1999,sparseNMF_hoyer,sparseNMF_kim,sparseNMF_heiler},
-sparse principal components analysis (SPCA)
-\cite{sparsePCA_zou,sparsePCA_jordan,sparsePCA_journee,sparsePCA_witten,Gandy2010,Lee2011}
-and singular value decomposition \cite{Sill2011,Lee2010b,Yeung2002}
-form the basis for the approach proposed here. More formally, define a
-$n \times p$ (rows by columns) matrix $\X$ where each row derives from
-an observed subject image such that the collection of images is given
-as vectors $\{x_1,...,x_n\}$ with each vector $x_i$ containing $p$ entries.  
-First, we denote each eigenanatomy component (a pseudo-eigenvector) as
-${\vv}_i$ where $i$ is ordered such that each eigenanatomy from
-${\vv}_1$ to ${\vv}_m$ provides a decreasing contribution to the
-variance of matrix $\X$.  We define eigenanatomy pseudo-eigenvectors as {\em
-  sparse}.  Sparseness means that some entries in ${\vv}_j$ will be zero.
+%The class of methods encompassing non-negative matrix factorization
+%(NMF) \cite{Lee1999,sparseNMF_hoyer,sparseNMF_kim,sparseNMF_heiler},
+%sparse principal components analysis (SPCA)
+%\cite{sparsePCA_zou,sparsePCA_jordan,sparsePCA_journee,sparsePCA_witten,Gandy2010,Lee2011}
+%and singular value decomposition \cite{Sill2011,Lee2010b,Yeung2002}
+%form the basis for the approach proposed here.
  
-The classic singular value decomposition (SVD) may be used to reduce the dimensionality of this data by decomposing the dataset into the eigenvectors of $C_p = \X^T\X$ and $C_n = \X\X^T$ (the right and left singular vectors, respectively).  
-The relationship between a $C_p$ and a $C_n$ eigenvector is given by $\X \vv^p = \vv^n$ and $\X^T \vv^n = \vv^p$.  
-The $n$ eigenvectors from $C_p$ and $C_n$ may be used to reconstruct the matrix $\X$ by 
-% \begin{eqnarray}
-$\sum_i \vv^n_i \otimes \vv^p_i \lambda_i $
-% \end{eqnarray}
-where the $\lambda_i$ denotes the $i^{th}$ eigenvalue and $\otimes$ the outer product.
+More generally, $X$ is an $n \times p$ matrix where each row represents observations at a given time and each column is a time-signal within a voxel. We then define a set of canonical variates $\{ v_i,...,v_n\}$ where each $v_i$ is ordered such that each variate from $v_1$ to $v_n$ provides a decreasing contribution to the variance of $X$. Here, we want to enforce sparseness, meaning that some entries in $v_i$ will be zero. The classic singular value decomposition (SVD) may be used to reduce the dimensionality of this data by decomposing the dataset into the eigenvectors of $C_p = \X^T\X$ and $C_n = \X\X^T$ (the right and left singular vectors, respectively).  The relationship between a $C_p$ and a $C_n$ eigenvector is given by $\X \vv^p = \vv^n$ and $\X^T \vv^n = \vv^p$.  The $n$ eigenvectors from $C_p$ and $C_n$ may be used to reconstruct the matrix $\X$ by $\sum_i \vv^n_i \otimes \vv^p_i \lambda_i $ where the $\lambda_i$ denotes the $i^{th}$ eigenvalue and $\otimes$ the outer product.
 
+%as vectors $\{x_1,...,x_n\}$ with each vector $x_i$ containing $p$ entries.  irst, we denote each eigenanatomy component (a pseudo-eigenvector) as
+%${\vv}_i$ where $i$ is ordered such that each eigenanatomy from
+%${\vv}_1$ to ${\vv}_m$ provides a decreasing contribution to the
+%variance of matrix $\X$.  We define eigenanatomy pseudo-eigenvectors as {\em
+ % sparse}.  Sparseness means that some entries in ${\vv}_j$ will be zero.
+ 
 Our goal is to approximate the matrix $\X$ with its right and left singular vectors but where the right singular vector is {\em sparse}.  We might, then, minimize:
 \begin{eqnarray}
 \label{eq:recon}
@@ -180,10 +162,12 @@ Sparseness can be enforced by a soft-thresholding algorithm as in \cite{sparsePC
 To examine consistency, connectivity matrices are calculated for each time point using the classic region-averaged approach and the SCCA method on: ASL-CBF, ASL-BOLD, and combined ASL-CBF and ASL-BOLD. Graph correlation \cite{vanWijk2010} is used for the comparison of connectivity matrices. To confirm that the ASL-CBF and ASL-BOLD signals contain unique information, these matrices are correlated for each time point.
 
 \subsection{Cross-sectional examination of brain connectivity in TBI}
-\noindent{\bf Neuroimaging data:} Our cohort consists of 61 participants, including 15 patients with AD (7 females), 23 patients with FTLD (14 females), and 23 controls (13 females). All patients were clinically diagnosed by a board-certified neurologist and cerebrospinal fluid confirmation of the underlying pathology was obtained \cite{Irwin2011}.  No significant difference exist between disease
-duration, age or education in the patient or control groups.  Two 3.0T MPRAGE T1-weighted magnetic resonance images were obtained for each subject.  The FTLD group (time interval 1.12 years +/- 0.28) trended (p$<$0.081) towards having a reduced interval when compared to elderly controls (time interval 1.29+/-0.36 years), as did the AD group (time interval 1.13+/-0.25 years, p$<$0.12). The interval between scans was therefore factored out as a nuisance variable.
+\noindent{\bf Neuroimaging data:} Our cohort consists of N participants, including 22 patients with TBI (9 females), and 18 controls (9 females). No significant difference exist between age or education in the patient or control groups.  The same image acquisition as decribed above was used for these subjects.
 
 \noindent{\bf Image processing:} Processing for this data is identical to that for the test-retest data described above.
+
+To identify potential effects of TBI, CBF-BOLD connectivity matrices were calculated for all subjects. In particular, the default mode network is of interest as this network has been shown to be affected by TBI \cite{} and is relevant here as the data was acquired during the resting state. The default mode network consists of the XXXX. 
+
 %For all uses of eigenanatomy below, we set the sparseness parameter, $\gamma$, to select 5\% of the voxels in the cortex.  We choose 5\% because this provides interpretable clusters of regions in the cortex and yet still allows a reasonable reconstruction of the original data matrix, as shown in Figure~\ref{fig:eigenanatomy}. \newline
 
 %\noindent{\bf Reconstruction error:} We quantify the ability of the eigenanatomy algorithm to reconstruct the original dataset from sparse eigenvectors using equation~\ref{eq:recon}.  As a baseline, we compare the full eigenanatomy solution to the reconstruction given by applying the soft-threshold function $S$ directly to the SVD-derived vectors $\vv_i^p$ without further optimization.  We call this ``soft-SVD''.  We also compare reconstruction error to the eigenanatomy algorithm run with a restriction on the number of iterations in the SNLCG sub-algorithm.  These experiments show that the full eigenanatomy algorithm run until convergence (error = 1.251 ) improves upon both the soft-SVD solution (error = 1.292) and the limited iteration eigenanatomy solution (error = 1.279). Error is measured by the frobenius norm taken between the original matrix and the reconstructed matrix.\newline

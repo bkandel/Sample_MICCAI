@@ -52,7 +52,6 @@ Canonical correlation analysis (CCA) generalizes this approach \cite{Hotelling19
 \begin{equation}
 \underset{u^i,u^j}{\operatorname{arg\,max}} \quad~ Corr(~u^i~X^i,~u^j~X^j~) 
 \end{equation}
-\textcolor{red}{FIXME---check CCA formulation.}
 This formulation allows for the inclusion of the full time signal in all voxels in an ROI and is ``nice'' in that it can be solved by singular value decomposition if the number of samples is larger than the minimum number of columns in $X^i$ or $X^j$. Sparse CCA extends CCA with additional constraints that allow the problem to be solved even when the input matrices are ``fat'' i.e. the number of columns far exceeds the number of rows, as is typically the case in fuctional MRI data.  The SCCA formulation optimizes: 
 \begin{gather*}
 \underset{u^i,u^j}{\operatorname{arg\,max}} \quad~ ~~u^i~(X^i)^T ~X^j~u^j~\\ \notag \text{subject to} \\ \notag
@@ -160,6 +159,14 @@ Sparseness can be enforced by a soft-thresholding algorithm as in \cite{sparsePC
 \noindent{\bf Image processing:} The set of T1 images from each subjects first time points was used to construct a template using ANTs \cite{ANTS}. This template was brain masked and labeled with the AAL dataset \cite{Tzourio-Mazoyer2002}. Additionally, the a three-tissue segmentation of the template allowed the labels to be partially masked so only cortex and deep gray structures were labeled. For each time point, the T1 image was registered to the template image. Additionally, registration was used to find an intra-subject mapping between the T1 image and the M0 image that is acquired as a reference for the PASL acquisition. These transforms were composed to map the cortical labels into ASL native space for each time point. For PASL images, the M0 image served as a reference for motion-correction of all time-point volumes. Sinc interpolation was used to estimate the full time-series for both the control and tag data. The difference between control and tag was used along with relevant acquisition parameters to calculate the ASL-CBF over time, while the average of the two signals was calculated for ASL-BOLD \cite{Wong1997}. 
 
 To examine consistency, connectivity matrices are calculated for each time point using the classic region-averaged approach and the SCCA method on: ASL-CBF, ASL-BOLD, and combined ASL-CBF and ASL-BOLD. Graph correlation \cite{vanWijk2010} is used for the comparison of connectivity matrices. To confirm that the ASL-CBF and ASL-BOLD signals contain unique information, these matrices are correlated for each time point.
+
+\begin{figure}[tb]
+\begin{center}
+\includegraphics[width=1.0\linewidth]{net_test_retest.png} 
+\caption{ describe it here}
+\label{fig:testretest}
+\end{center}
+\end{figure}
 
 \subsection{Cross-sectional examination of brain connectivity in TBI}
 \noindent{\bf Neuroimaging data:} Our cohort consists of N participants, including 22 patients with TBI (9 females), and 18 controls (9 females). No significant difference exist between age or education in the patient or control groups.  The same image acquisition as decribed above was used for these subjects.

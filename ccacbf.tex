@@ -67,6 +67,8 @@ Recall that we represent a given ROI's BOLD and ASL signal as $X^i$ and $Y^i$ wh
 
 Now note that in the standard approach to ROI-bsed network analysis, the correlation matrix is given by $\mathcal{R}_{ROI}(i,j)=\text{Corr}( a(X^i), a(X^j) )$ where $a(\cdot)$ indicates averaging over the ROI.   The SCCA solution is trivial to use in the same manner, producing  $\mathcal{R}_{SCCA}(i,j)=\text{SCCA}( X^i, X^j ) = \text{Corr}( u^i X^i , u^j X^j )$.  Note that the key difference is that SCCA will optimize the canonical variates to specifically identify the sub-regions within ROI$^i$ and ROI$^j$ that are most mutually informative.  As we show in the experimental section, this technique's ability to adapt to the input data yields advantages in both reproducibility and in population analyses of network effects.  
 
+
+\textcolor{red}{FIXME---within a single subject, show the ROI measurements (e.g. for DMN) in 3D and also show the extracted SCCA components for comparison ... i.e. the shape and location of the anatomical regions ... }
 %\subsubsection{Fusing functional signals via SCCA}To serve as a basis for later comparison, A correlation matrix was also computed from concatenated averaged ASL-BOLD and ASL-CBF time series data.
 
 \section{Results}
@@ -106,8 +108,10 @@ All p-values for diagnosis were FDR corrected and connections with p<0.1 were re
 \end{center}
 \end{figure}
 
-\section{Conclusion}
+\section{Discussion}
 We detailed how SCCA may be used to fuse the ASL-CBF and ASL-BOLD signals to exploit both the multi-variate signal provided by ASL as well as the full information provided within each anatomical region. We demonstarted that the SCCA method provides a more repeatable measure of network connectivity than the classic region-averaged approach. An additional examination of TBI suggested that the SCCA method provides a measure of connectivity that is more sensitive to disruptions in the DMN.  Future work will include exploring how additional modalities, such as standard BOLD fMRI, may be incorporated into the framework described here.
+
+There are several caveats that must be kept in mind when interpreting these findings.   One important issue in connectivity studies is the possible artifacts induced by motion.   While we did not find significant differences in motion parameters between groups, this confound may not be entirely ruled out, although we note that its effect should be similar across all comparisons.  Regarding our BOLD findings, we note that ASL sequences are not optimized for BOLD sensitivity; in general, our findings may differ for different types of ASL or other functional MRI sequences.  Finally, we did not study every frequency range and these may impact reliability in all of the studied signals.  In future work, we will more carefully characterize the signal that is extracted by the SCCA approach in comparison to the ROI analysis.   However, we believe that the novel findings reported in this work encourage further exploration of using SCCA to drive network analyses of the brain. 
 
 \bibliographystyle{splncs}
 \bibliography{refs}

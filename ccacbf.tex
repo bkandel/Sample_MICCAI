@@ -23,7 +23,7 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-We contribute a novel multivariate strategy for computing brain network structure from arterial spin labeling (ASL) MRI.  Our method fuses and correlates multiple functional signals by employing an interpretable dimensionality reduction method, sparse canonical correlation analysis (SCCA).  There are two key aspects of this contribution.  First, we show how SCCA may be used to compute a multivariate correlation between different regions of interest (ROI).  In contrast to averaging signal over the ROI, this approach exploits the full information within the ROI.  Second, we show how SCCA may simultaneously exploit both the ASL-BOLD and ASL-based cerebral blood flow (CBF) time series to produce network measurements.  Our approach to fusing multiple time signals in network studies improves reproducibility over standard approaches while retaining the interpretability afforded by the classic ROI region-averaging methods.  We show experimentally in test-retest data that our sparse CCA method extracts biologically plausible and stable network structures from ASL.  We compare the ROI approach to the CCA approach while using CBF measurements alone.  We then compare these results to the joint BOLD-CBF networks in a reproducibility study and in a study of network structure in traumatic brain injury (TBI).  In TBI, standard region-averaging approaches may fail due to local injury which makes averaging over a full ROI less meaningful.  We detail the algorithm and show experimental evidence of its efficacy in a clinically relevant TBI population.  Our results show that the SCCA approach provides significantly more reproducible results compared to region-averaging, and in TBI the SCCA approach reveals connectivity differences not seen with the region averaging approach.
+We contribute a novel multivariate strategy for computing brain network structure from arterial spin labeling (ASL) MRI.  Our method fuses and correlates multiple functional signals by employing an interpretable dimensionality reduction method, sparse canonical correlation analysis (SCCA).  There are two key aspects of this contribution.  First, we show how SCCA may be used to compute a multivariate correlation between different regions of interest (ROI).  In contrast to averaging signal over the ROI, this approach exploits the full information within the ROI.  Second, we show how SCCA may simultaneously exploit both the ASL-BOLD and ASL-based cerebral blood flow (CBF) time series to produce network measurements.  Our approach to fusing multiple time signals in network studies improves reproducibility over standard approaches while retaining the interpretability afforded by the classic ROI region-averaging methods.  We show experimentally in test-retest data that our sparse CCA method extracts biologically plausible and stable network structures from ASL.  We compare the ROI approach to the CCA approach while using CBF measurements alone.  We then compare these results to the joint BOLD-CBF networks in a reproducibility study and in a study of network structure in traumatic brain injury (TBI).  We detail the algorithm and show experimental evidence of its efficacy in a clinically relevant TBI population.  Our results show that the SCCA approach provides significantly more reproducible results compared to region-averaging, and in TBI the SCCA approach reveals connectivity differences not seen with the region averaging approach.
 \end{abstract}
 
 \section{Introduction}
@@ -31,7 +31,7 @@ Functional MRI (fMRI) is capable of measuring subject-specific and long-range co
 
 % Hz ref = Cordes2001
 
-While EPI-BOLD has been used extensively to examine functional brain connectivity in large-scale brain networks, only a small number of studies have examined functional connectivity in ASL \cite{Chuang2008,Zou2009}. Two studies have compared ASL-connectivity and BOLD connectivity measured with either EPI-BOLD \cite{Li2012}, or ASL-BOLD \cite{Viviani2011}.  To our knowledge no previous work has combined the CBF and BOLD components of the ASL signal to obtain a functional connectivity measure that exploits the full information provided by this modality. The scarcity of related work may be due, in part, to the fact that most ASL sequences collect relatively fewer time frames (impacting the stability of correlations) in a given amount of scan time as well as the lack of off-the-shelf methodology for computing ASL networks.  There is no work that we are aware of employing ASL-connectivity in TBI.   This population is difficult due to the heterogeneity of injury and the likely presence of cortical injury which may make standard analysis approaches difficult to justify. 
+While EPI-BOLD has been used extensively to examine functional brain connectivity in large-scale brain networks, only a small number of studies have examined functional connectivity in ASL \cite{Chuang2008,Zou2009}. Two studies have compared ASL-connectivity and BOLD connectivity measured with either EPI-BOLD \cite{Li2012}, or ASL-BOLD \cite{Viviani2011}.  To our knowledge no previous work has combined the CBF and BOLD components of the ASL signal to obtain a functional connectivity measure that exploits the full information provided by this modality. The scarcity of related work may be due, in part, to the fact that most ASL sequences collect relatively fewer time frames (impacting the stability of correlations) in a given amount of scan time as well as the lack of off-the-shelf methodology for computing ASL networks.  There is no work that we are aware of employing ASL-connectivity in TBI.   
 
 In this work, we contribute a new multivariate method for ASL-based network analysis.  We improve upon existing approaches in two ways.  First, we extend standard region-based methods with a sparse dimensionality reduction method that optimally correlates two ROIs.  This is achieved by formulating the correlation between ROIs as a sparse selection optimization algorithm that finds non-uniformly weighted sub-ROIs that are most related.  Second, we show how this method may jointly find these sub-ROIs by using both ASL-BOLD and CBF time series signal.  Both of these advances relax some of the assumptions of standard region-based approaches while retaining the interpretability afforded by these classic approaches.  In short, our contributions are: 
 
@@ -46,7 +46,7 @@ In this work, we contribute a new multivariate method for ASL-based network anal
 
 \section{Methods}
 \subsubsection*{ROI analysis for network construction.}
-Denote the matrices that describe the ASL-BOLD or ASL-CBF time series within a whole-brain ROI as $X$ and $Y$ respectively.  Additionally, for a given set of anatomical ROIs for which there are $L$ regions, we denote the ASL-BOLD sub-matrix extracted from ROI$^i$ as $X^i$.  Then $Y^i$ will contain that same ROI's ASL-CBF measurements. The classic region-based analysis will compute $x^i = 1/n \sum_k x^i_k$ which denotes averaging the $x^i_k$ columns of $X^i$ and similarly for $y^i$.  From these region-averaged time-signals, a correlation matrix, $\mathcal{R}$, of size $L \times L$ is calculated, where $\mathcal{R}(i,j)=Corr(x^i,x^j)$ with $Corr$ denoting the Pearson's correlation. This correlation matix then serves as the basis for graph or network analysis of the brain \cite{Bullmore2009}. 
+Denote the matrices that describe the ASL-BOLD or ASL-CBF time series within a whole-brain ROI as $X$ and $Y$ respectively.  Additionally, for a given set of anatomical ROIs for which there are $L$ regions, we denote the ASL-BOLD sub-matrix extracted from ROI$^i$ as $X^i$.  Then $Y^i$ will contain that same ROI's ASL-CBF measurements. The classic region-based analysis will compute $x^i = 1/n \sum_k x^i_k$ which denotes averaging the $x^i_k$ columns of $X^i$ and similarly for $y^i$.  From these region-averaged time-signals, a correlation matrix, $\mathcal{R}$, of size $L \times L$ is calculated, where $\mathcal{R}(i,j)=Corr(x^i,x^j)$ with $Corr$ denoting the Pearson's correlation. 
 
 \subsubsection{Fusing functional signals via SCCA.}
 Canonical correlation analysis (CCA) is a method for elucidating the relationship between two sets of measurements taken across a population \cite{Hotelling1936} and is thus well-suited to multivariate neuroimaging data.  
@@ -74,10 +74,10 @@ To obtain a connectivity matrix for an individual, the original ASL data and cor
 \begin{figure}[tb]
 \begin{center}
 \begin{tabular}{ c }
-\includegraphics[width=0.9\linewidth]{all_signals3.png}\\
-\includegraphics[width=0.9\linewidth]{roi_signals3.png} \\
+\includegraphics[width=0.75\linewidth]{all_signals3.png}\\
+\includegraphics[width=0.75\linewidth]{metric_signals.png} \\
 \end{tabular}
-\caption{ ASL signals in the cingulate gyrus of a normal individual showing ASL-CBF and ASL-BOLD in all voxels in the ROI (top) and the average of these signals (bottom).}
+\caption{ ASL signals in the cingulate gyrus of a normal individual showing ASL-CBF and ASL-BOLD in all voxels in the ROI (top). The average ASL-CBF and ASL-BOLD are illustrated on the bottom in red and the ASL-CBF and ASL-BOLD that result from using SCCA to examine connectivity with the hippocampus is shown in blue. Both signals on the bottom have been intesity normalized for visualization}
 \label{fig:signals}
 \end{center}
 \end{figure}
@@ -85,7 +85,7 @@ To obtain a connectivity matrix for an individual, the original ASL data and cor
 \begin{figure}[tb]
 \begin{center}
 \begin{tabular}{ c c }
-\includegraphics[width=0.30\linewidth]{roi.png} & \includegraphics[width=0.30\linewidth]{scca.png} \\
+\includegraphics[width=0.25\linewidth]{roi.png} & \includegraphics[width=0.25\linewidth]{scca.png} \\
 (A) & (B)
 \end{tabular}
 \caption{ Intrahemisheric connectivity in the default mode network of an individual subject is visualized using A) ROI averaged combined CBF and BOLD and B) SCCA based combined CBF and BOLD. The centroid of all labeled regions are illustrated with blue spheres, and the connections in the DMN are illustrated with line segments. The connectivity matrix values are used along with heat-mapping to color the line segments where higher connectivity values result in ``hotter'' colors. }
@@ -102,7 +102,10 @@ Our experimental design will establish the impact of SCCA-based network analysis
 
 \noindent{\bf Image processing:} The set of T1 images from each subjects first time point was used to construct a template using ANTs \cite{Avants2011}. This template was brain masked and labeled with the AAL dataset \cite{Tzourio-Mazoyer2002}. A three-tissue segmentation was performed to allowed the labels to be partially masked so only cortex and deep gray structures were labeled. For each time point, the T1 image was registered to the template image. Additionally, registration was used to find an intra-subject mapping between the T1 image and the M0 image that is acquired as a reference for the PASL acquisition. These transforms were composed to map the cortical labels into ASL native space for each time point. For PASL images, the M0 image served as a reference for motion-correction of all time-point volumes. Sinc interpolation was used to estimate the full time-series for both the control and tag data. The difference between control and tag was used along with relevant acquisition parameters to calculate the ASL-CBF over time, while the average of the two signals was calculated for ASL-BOLD \cite{Wong1997}. 
 
-\noindent{\bf Reproducibility testing:} To examine reproducibility, connectivity matrices are calculated for each time point using the classic region-averaged approach and the SCCA method on: ASL-CBF, ASL-BOLD, and combined ASL-CBF and ASL-BOLD. Graph correlation \cite{vanWijk2010} is used for the comparison of connectivity matrices in order to examine reproducibility between images acquired on the same day, and images acquired one week apart. The results are illustrated in figure \ref{fig:testretest}.
+\noindent{\bf Reproducibility testing:} To examine reproducibility, connectivity matrices are calculated for each time point using the classic region-averaged approach and the SCCA method on: ASL-CBF, ASL-BOLD, and combined ASL-CBF and ASL-BOLD. Graph correlation \cite{vanWijk2010} is used for the comparison of connectivity matrices in order to examine reproducibility between images acquired on the same day, and images acquired one week apart. The results are illustrated in figure \ref{fig:testretest}. A paired, one-sided Student's t-test was used to determine when the SCCA based method produced significantly more reproducible results than the correspoding region-averaged metric. Here we list the percent improvement provided by the SCCA method along with the p-value from the t-test. \newline
+\noindent{\bf Daily:} ASL-BOLD $=$ 17.72\% (p=5.0e-7), ASL-CBF $=$ 23.45\% (p=4.5e-7), Combined $=$ 23.45\% (p=0.0014) \newline
+\noindent{\bf Weekly:} ASL-BOLD $=$ 18.79\% (p=8.1e-6), ASL-CBF $=$ 17.97\% (p=1.0e-7), Combined $=$ 7.23\% (p=1.75e-5) \newline
+The largest improvements in reproducibiliy occur in the CBF based connectivity, suggeting that in this particular case, little useful information is gained by including the ASL-BOLD signal.
 
 \begin{figure}[tb]
 \begin{center}
@@ -112,10 +115,23 @@ Our experimental design will establish the impact of SCCA-based network analysis
 \end{center}
 \end{figure}
 
+%\begin{table}
+%  \begin{tabular}{|l|l|l|l|}
+ %   \hline
+  %  & BOLD & CBF & Combined \\ 
+   % \hline
+   % Daily & 17.23\% (p=5.0e-7) & 23.46\% (p=4.5e-7) & 23.46\% (p=0.0014) \\ 
+   % \hline
+    %Weekly & 17.24\% (p=8.1e-6) & 17.47\% (p=1.0e-7) & 7.09\% (p=1.75e-5) \\
+    %\hline
+ % \end{tabular}
+ % \caption{For each corresponding pair of metrics, the SCCA-based method was compared to the region-based method. The percent increase in reproducibility provided by the SCCA method is listed along with the p-value resulting from a one-sided, paired Student's t-test.}
+%\end{table}
+
 \subsection{Cross-sectional examination of brain connectivity in TBI}
 \noindent{\bf Neuroimaging data:} Our cohort consists of 41 participants (mean age 30.4 $\pm$ 10.2), including 22 patients with TBI (9 females), and 18 controls (9 females). No significant difference exist between age or education in the patient or control groups.  The same image T1 acquisition as described above was used for these subjects.
 
-\noindent{\bf Image processing:} Processing for this data is identical to that for the test-retest data described above. The pulsed ASL (PASL) images were acquired with 160 alternating tag/control images and 2 M0 images all with 14 contiguous slice of 7.5mm thickness, FOV = 220 $\times$ 220mm$^2$, matrix = 64 $\times$ 64. Additional acquisition parameters: TI1 = 700ms, TI2 = 1900ms.
+\noindent{\bf Image processing:} Processing for this data is identical to that for the test-retest data described above. The pulsed ASL (PASL) images were acquired with 160 alternating tag/control images and 2 M0 images all with 14 contiguous slice of 7.5mm thickness, FOV = 220 $\times$ 220mm$^2$, matrix = 64 $\times$ 64. Additional acquisition parameters: TI1 =  700ms, TI2 = 1900ms.
 
 \noindent{\bf Network differences:} To identify potential effects of TBI, connectivity matrices were calculated for all subjects using all metrics. In particular, the default mode network (DMN) is of interest as this network has been shown to be affected by TBI \cite{Johnson2012} and is relevant here as the data was acquired during the resting state. Here we used the following labeled regions for the DMN: posterior cingulate gyrus, hippocampus, frontal medial orbital cortex, and the angular gyrus. This network is illustrated in figure \ref{fig:dmn}. Each subjects time from injury was categorized as either: no injury, less than one year since injury, or more than one year since injury. For each metric of interest, connectivity values for intra-hemispheric connections in each hemisphere were extracted and $R$ was used examine the influence of diagnosis (TBI or control) on connectivity values using (in $R$ syntax):
 \begin{equation}
